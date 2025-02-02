@@ -9,14 +9,17 @@ from fastapi.openapi.docs import (
 
 
 from models import db_helper
+from services.redis_service import broadcast
 from utils.fixtures import load_fixtures
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await broadcast.connect()
     async with db_helper.session_factory() as session:
         await load_fixtures(session)
     yield
+    await broadcast.disconnect()
     await db_helper.dispose()
 
 
