@@ -46,14 +46,14 @@ class ApiPrefix(BaseModel):
     v1: ApiV1Prefix = ApiV1Prefix()
 
 
-class OpenAiConfig(BaseModel):
-    api_key: str
-    bakai_assistant_id: str
+class OpenAiConfig(BaseSettings):
+    api_key: str = 'api_key'
+    bakai_assistant_id: str = 'bakai_assistant_id'
 
 
 class DatabaseConfig(BaseModel):
     POSTGRES_USER: str = 'postgres'
-    POSTGRES_PASSWORD: SecretStr
+    POSTGRES_PASSWORD: SecretStr = 'PASSWORD'
     POSTGRES_DB: str = 'postgres'
     POSTGRES_HOST: str = 'database'  # Добавьте это поле
     POSTGRES_PORT: int = 5432
@@ -98,7 +98,7 @@ class RedisConfig(BaseModel):
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=(".env.template", ".env.dev"),
+        env_file=(".env.template", ".env.dev", '.env.prod'),
         case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
@@ -109,7 +109,7 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     redis: RedisConfig = RedisConfig()
     openai: OpenAiConfig = OpenAiConfig()
-    db: DatabaseConfig
+    db: DatabaseConfig = DatabaseConfig()
 
 
 settings = Settings()
