@@ -2,7 +2,7 @@
 services:
   backend:
     build:
-      context: backend
+      context: .
       dockerfile: backend/Dockerfile.prod
     env_file:
       - .env.prod
