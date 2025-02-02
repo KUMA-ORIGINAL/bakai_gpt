@@ -26,7 +26,7 @@ ENV APP_HOME=/app
 WORKDIR $APP_HOME
 
 # install dependencies
-COPY --from=builder $APP_HOME/app/wheels /wheels
+COPY --from=builder $APP_HOME/wheels /wheels
 COPY --from=builder $APP_HOME/requirements.txt .
 RUN pip install --no-cache /wheels/*
 
