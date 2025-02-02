@@ -30,11 +30,6 @@ COPY --from=builder /backend/app/wheels /wheels
 COPY --from=builder /backend/requirements.txt .
 RUN pip install --no-cache /wheels/*
 
-COPY ./app_entrypoint.prod.sh .
-RUN sed -i 's/\r$//g' $APP_HOME/app_entrypoint.prod.sh
-RUN chmod +x $APP_HOME/app_entrypoint.prod.sh
+COPY app $APP_HOME
 
-# copy project
-COPY .. $APP_HOME
-
-CMD ["sh", "/app/app_entrypoint.prod.sh"]
+CMD ["python", "run_main.py"]

@@ -10,14 +10,14 @@ services:
     expose:
       - 8000
     volumes:
-      - ./app:/app
+      - ./backend/app:/app
       - static_volume:/app/static
       - media_volume:/app/media
     depends_on:
       database:
         condition: service_healthy
-      redis:
-        condition: service_healthy
+#      redis:
+#        condition: service_healthy
 
   database:
     image: postgres:16.2-alpine3.18
@@ -37,18 +37,18 @@ services:
           cpus: '1'
           memory: 1G
 
-  redis:
-    image: redis:7.4-alpine
-    container_name: redis
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
-      interval: 1s
-      timeout: 3s
-      retries: 5
+#  redis:
+#    image: redis:7.4-alpine
+#    container_name: redis
+#    ports:
+#      - '6379:6379'
+#    volumes:
+#      - redis_data:/data
+#    healthcheck:
+#      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+#      interval: 1s
+#      timeout: 3s
+#      retries: 5
 
   nginx:
     build: nginx
@@ -63,23 +63,23 @@ services:
       - certs:/etc/letsencrypt
     depends_on:
       - backend
-      - frontend
+#      - frontend
 
-  frontend:
-    build:
-      context: ../web-menu/
-      dockerfile: backend/Dockerfile
-    restart: always
-    expose:
-      - 3000
-    depends_on:
-      - backend
-    volumes:
-      - static_volume:/frontend_static
+#  frontend:
+#    build:
+#      context: ../web-menu/
+#      dockerfile: backend/Dockerfile
+#    restart: always
+#    expose:
+#      - 3000
+#    depends_on:
+#      - backend
+#    volumes:
+#      - static_volume:/frontend_static
 
 volumes:
   database-storage:
-  redis_data:
+#  redis_data:
   static_volume:
   media_volume:
   certs:
