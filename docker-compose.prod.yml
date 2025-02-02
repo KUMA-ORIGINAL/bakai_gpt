@@ -10,7 +10,7 @@ services:
     expose:
       - 8000
     volumes:
-      - ./backend:/app
+      - ./backend/app:/app
       - static_volume:/app/static
       - media_volume:/app/media
     depends_on:
