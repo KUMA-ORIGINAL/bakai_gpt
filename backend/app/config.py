@@ -108,7 +108,7 @@ class Settings(BaseSettings):
     logging: LoggingConfig = LoggingConfig()
     api: ApiPrefix = ApiPrefix()
     redis: RedisConfig = RedisConfig()
-    openai: OpenAiConfig
+    openai: OpenAiConfig = OpenAiConfig()
     db: DatabaseConfig
 
 
