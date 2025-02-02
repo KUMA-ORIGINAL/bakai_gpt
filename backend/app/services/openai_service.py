@@ -19,7 +19,8 @@ async def get_assistant_response(
 ) -> AsyncGenerator[str, None]:
     if assistant.name == "Math Tutor":
         assistant_id = bakai_assistant_id
-
+    elif assistant.name == "History Expert":
+        assistant_id = bakai_assistant_id
     try:
         if assistant_id:
             assistant = await client.beta.assistants.retrieve(assistant_id)
