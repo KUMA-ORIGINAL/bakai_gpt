@@ -30,6 +30,6 @@ COPY --from=builder $APP_HOME/app/wheels /wheels
 COPY --from=builder $APP_HOME/requirements.txt .
 RUN pip install --no-cache /wheels/*
 
-COPY . /app
+COPY . .
 
 CMD ["python", "run_main.py"]
