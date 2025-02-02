@@ -12,7 +12,7 @@ services:
     volumes:
       - ./backend/app:/app
       - static_volume:/app/static
-      - media_volume:/app/media
+#      - media_volume:/app/media
     depends_on:
       database:
         condition: service_healthy
@@ -81,5 +81,5 @@ volumes:
   database-storage:
 #  redis_data:
   static_volume:
-  media_volume:
+#  media_volume:
   certs:
