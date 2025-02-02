@@ -15,7 +15,7 @@ FROM python:3.12.8-alpine3.20
 ENV PROJECT_DIR=/app
 WORKDIR $PROJECT_DIR
 
-COPY --from=builder $PROJECT_DIR/wheels /wheels
+COPY --from=builder $PROJECT_DIR/app/wheels /wheels
 COPY --from=builder $PROJECT_DIR/requirements.txt .
 
 RUN pip install --no-cache /wheels/*
