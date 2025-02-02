@@ -37,6 +37,11 @@ services:
           cpus: '1'
           memory: 1G
 
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+
 #  redis:
 #    image: redis:7.4-alpine
 #    container_name: redis
