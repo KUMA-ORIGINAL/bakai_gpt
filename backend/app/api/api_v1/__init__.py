@@ -16,7 +16,7 @@ router.include_router(
 )
 router.include_router(
     chat_ws_router,
-    prefix=settings.ws,
+    prefix=settings.api.v1.ws,
 )
 router.include_router(
     assistant_router,
