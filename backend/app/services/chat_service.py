@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import Depends
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -18,6 +18,17 @@ class ChatService:
             ]
     ):
         self.db_session = db_session
+
+    async def update_chat(self, chat_id: int, **kwargs) -> ChatSchema:
+        stmt = (
+            update(Chat)
+            .where(Chat.id == chat_id)
+            .values(**kwargs)
+        )
+        await self.db_session.execute(stmt)
+        await self.db_session.commit()
+        updated_chat = await self.db_session.get(Chat, chat_id)
+        return ChatSchema.from_orm(updated_chat)
 
     async def get_user_chats(self, user_id: int) -> list[ChatSchema]:
         stmt = select(Chat).where(Chat.user_id == user_id)

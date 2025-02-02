@@ -21,6 +21,7 @@ class ChatUpdateSchema(BaseModel):
 class ChatSchema(BaseModel):
     id: int
     user: UserSchema
+    thread_id: Optional[str] = None
     assistant: AssistantSchema
     messages: List[MessageSchema] = []
 

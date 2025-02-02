@@ -37,3 +37,8 @@ class UserService:
         stmt = select(User).where(User.external_id == external_id)
         result = await self.db_session.execute(stmt)
         return result.scalars().first()
+
+    async def get_user_by_id(self, user_id: int) -> User:
+        stmt = select(User).where(User.id == user_id)
+        result = await self.db_session.execute(stmt)
+        return result.scalars().first()
