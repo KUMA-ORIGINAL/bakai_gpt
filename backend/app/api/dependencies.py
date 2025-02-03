@@ -4,6 +4,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import db_helper, User, Assistant
+from services import ChatService
 from services.assistant_service import AssistantService
 from services.user_service import UserService
 
@@ -34,3 +35,21 @@ async def get_assistant(
     if assistant is None:
         raise HTTPException(status_code=404, detail="Ассистент не найден")
     return assistant.id
+
+
+async def get_assistant_service(
+        db_session: Annotated[AsyncSession, Depends(db_helper.session_getter)]
+):
+    return AssistantService(db_session)
+
+
+async def get_chat_service(
+        db_session: Annotated[AsyncSession, Depends(db_helper.session_getter)]
+):
+    return ChatService(db_session)
+
+
+async def get_user_service(
+        db_session: Annotated[AsyncSession, Depends(db_helper.session_getter)]
+):
+    return UserService(db_session)

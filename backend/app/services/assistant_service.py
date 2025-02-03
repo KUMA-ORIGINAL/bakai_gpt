@@ -23,7 +23,7 @@ class AssistantService:
         self,
         order: str = "id",  # Поле для сортировки
         limit: int = 100,    # Лимит записей
-        offset: int = 0      # Смещение
+        offset: int = 0,
     ):
         stmt = (
             select(Assistant)

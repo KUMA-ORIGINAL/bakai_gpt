@@ -10,8 +10,8 @@ class Chat(Base, IntIdPkMixin, TimestampMixin):
     assistant_id: Mapped[int] = mapped_column(ForeignKey("assistants.id"))
     thread_id: Mapped[str] = mapped_column(nullable=True)
 
-    user: Mapped["User"] = relationship("User", back_populates="chats", lazy="selectin")
-    assistant: Mapped["Assistant"] = relationship("Assistant", lazy="selectin")
+    user: Mapped["User"] = relationship("User", back_populates="chats", lazy="joined")
+    assistant: Mapped["Assistant"] = relationship("Assistant", lazy="joined")
     messages: Mapped[list["Message"]] = relationship("Message", back_populates="chat",
-                                                     lazy="selectin")
+                                                     lazy="selectin", cascade='all, delete-orphan')
 

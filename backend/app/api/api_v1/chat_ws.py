@@ -1,7 +1,10 @@
+from typing import Annotated
+
 import anyio
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, WebSocketException
 from starlette import status
 
+from api.dependencies import get_chat_service, get_user_service, get_assistant_service
 from schemas.message_to_channel_schema import MessageToChannelSchema
 from services.assistant_service import AssistantService
 from services.openai_service import get_assistant_response
@@ -25,9 +28,9 @@ async def chat_websocket(
     websocket: WebSocket,
     assistant_id: int,
     user_id: int,
-    user_service: UserService = Depends(),
-    chat_service: ChatService = Depends(),
-    assistant_service: AssistantService = Depends(),
+    chat_service: Annotated[ChatService, Depends(get_chat_service)],
+    user_service: Annotated[UserService, Depends(get_user_service)],
+    assistant_service: Annotated[AssistantService, Depends(get_assistant_service)],
 ):
 
     await websocket.accept()
@@ -53,7 +56,10 @@ async def chat_websocket(
                                    'assistant_id': assistant_id})
         logger.info(f"Sent connection confirmation to user {user_id}")
 
-        chat = await chat_service.get_or_create_chat(user_id, assistant_id)
+        chat = await chat_service.get_chat(user_id, assistant_id)
+        if not chat:
+            chat = await chat_service.create_chat(user_id, assistant_id)
+
         channel_id = f"chat_{user_id}_{assistant_id}"
 
         logger.info(f"Chat {chat.id} initialized between user {user_id} and assistant {assistant_id}")
@@ -65,13 +71,15 @@ async def chat_websocket(
             task_group.start_soon(run_chatroom_ws_receiver)
             await chatroom_ws_sender(websocket, channel_id, chat, chat_service, assistant)
 
-    except WebSocketDisconnect:
-        logger.warning(f"User {user_id} disconnected.")
     except WebSocketException as e:
         logger.error(f"WebSocket error: {e}", exc_info=True)
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+    except WebSocketDisconnect:
+        logger.warning(f"User {user_id} disconnected.")
+        await websocket.close(code=status.WS_1001_GOING_AWAY)
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
+        await websocket.close(code=status.WS_1011_INTERNAL_ERROR)
 
 
 async def chatroom_ws_receiver(websocket: WebSocket, channel: str, chat, chat_service):
@@ -115,3 +123,4 @@ async def chatroom_ws_sender(websocket: WebSocket, channel: str, chat, chat_serv
         logger.warning(f"User disconnected during message sending.")
     except Exception as e:
         logger.error(f"An error occurred in sender: {e}", exc_info=True)
+        await websocket.close(code=status.WS_1011_INTERNAL_ERROR)
