@@ -24,15 +24,14 @@ class ChatService:
 
     async def update_chat(self, chat_id: int, **kwargs) -> ChatSchema:
         try:
-            async with self.db_session.begin():
-                stmt = (
-                    update(Chat)
-                    .where(Chat.id == chat_id)
-                    .values(**kwargs)
-                )
-                await self.db_session.execute(stmt)
-                updated_chat = await self.db_session.get(Chat, chat_id)
-                return ChatSchema.from_orm(updated_chat)
+            stmt = (
+                update(Chat)
+                .where(Chat.id == chat_id)
+                .values(**kwargs)
+            )
+            await self.db_session.execute(stmt)
+            updated_chat = await self.db_session.get(Chat, chat_id)
+            return ChatSchema.from_orm(updated_chat)
         except SQLAlchemyError as e:
             logger.error(f"Error updating chat {chat_id}: {str(e)}")
             await self.db_session.rollback()  # Откат транзакции при ошибке
@@ -54,28 +53,27 @@ class ChatService:
 
     async def get_or_create_chat(self, user_id: int, assistant_id: int) -> ChatSchema:
         try:
-            async with self.db_session.begin():
-                stmt = (
-                    select(Chat)
-                    .where(
-                        Chat.user_id == user_id,
-                        Chat.assistant_id == assistant_id
-                    )
-                    .options(
-                        selectinload(Chat.user),
-                        selectinload(Chat.assistant),
-                        selectinload(Chat.messages),
-                    )
+            stmt = (
+                select(Chat)
+                .where(
+                    Chat.user_id == user_id,
+                    Chat.assistant_id == assistant_id
                 )
-                result = await self.db_session.execute(stmt)
-                chat = result.scalars().first()
+                .options(
+                    selectinload(Chat.user),
+                    selectinload(Chat.assistant),
+                    selectinload(Chat.messages),
+                )
+            )
+            result = await self.db_session.execute(stmt)
+            chat = result.scalars().first()
 
-                if not chat:
-                    chat = Chat(user_id=user_id, assistant_id=assistant_id)
-                    self.db_session.add(chat)
+            if not chat:
+                chat = Chat(user_id=user_id, assistant_id=assistant_id)
+                self.db_session.add(chat)
 
-                await self.db_session.commit()
-                return ChatSchema.from_orm(chat)
+            await self.db_session.commit()
+            return ChatSchema.from_orm(chat)
         except SQLAlchemyError as e:
             logger.error(f"Error getting or creating chat for user {user_id} and assistant {assistant_id}: {str(e)}")
             await self.db_session.rollback()
