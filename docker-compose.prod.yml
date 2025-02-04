@@ -73,7 +73,6 @@ services:
   frontend:
     build:
       context: ../bakaiGPT/
-      dockerfile: backend/Dockerfile
     restart: always
     expose:
       - 3000
