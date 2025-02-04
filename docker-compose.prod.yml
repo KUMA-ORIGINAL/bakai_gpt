@@ -68,19 +68,19 @@ services:
       - certs:/etc/letsencrypt
     depends_on:
       - backend
-#      - frontend
+      - frontend
 
-#  frontend:
-#    build:
-#      context: ../web-menu/
-#      dockerfile: backend/Dockerfile
-#    restart: always
-#    expose:
-#      - 3000
-#    depends_on:
-#      - backend
-#    volumes:
-#      - static_volume:/frontend_static
+  frontend:
+    build:
+      context: ../bakaiGPT/
+      dockerfile: backend/Dockerfile
+    restart: always
+    expose:
+      - 3000
+    depends_on:
+      - backend
+    volumes:
+      - static_volume:/frontend_static
 
 volumes:
   database-storage:
