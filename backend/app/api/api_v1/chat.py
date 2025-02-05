@@ -34,7 +34,7 @@ async def create_chat(
     return new_chat
 
 
-@router.get("/{chat_id}", response_model=ChatSchema)
+@router.get("/{chat_id}/", response_model=ChatSchema)
 async def get_chat(
     chat_id: int,
     chat_service: Annotated[ChatService, Depends(get_chat_service)],
@@ -46,7 +46,7 @@ async def get_chat(
     return chat
 
 
-@router.delete("/{chat_id}", response_model=ChatSchema)
+@router.delete("/{chat_id}/", response_model=ChatSchema)
 async def delete_chat(
     chat_id: int,
     chat_service: Annotated[ChatService, Depends(get_chat_service)],

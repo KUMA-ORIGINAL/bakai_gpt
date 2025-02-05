@@ -4,7 +4,7 @@ import anyio
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, WebSocketException
 from starlette import status
 
-from api.dependencies import get_chat_service, verify_user
+from api.dependencies import get_chat_service, verify_user_ws
 from services.openai_service import get_assistant_response
 from managers.connection import ConnectionManager
 from services.chat_service import ChatService
@@ -20,12 +20,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@router.websocket("/chats/{chat_id}")
+@router.websocket("/chats/{chat_id}/")
 async def chat_websocket(
     websocket: WebSocket,
     chat_id: int,
     chat_service: Annotated[ChatService, Depends(get_chat_service)],
-    user_id: int = Depends(verify_user)
+    user_id: int = Depends(verify_user_ws)
 ):
     await websocket.accept()
 

@@ -1,7 +1,7 @@
 import hashlib
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Header
+from fastapi import Depends, HTTPException, Header, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import db_helper
@@ -46,6 +46,30 @@ async def verify_user(
 ):
     if not user_external_id or not hash:
         raise HTTPException(status_code=400, detail="Missing headers")
+
+    expected_hash = generate_hash(user_external_id, SECRET_KEY)
+
+    if hash != expected_hash:
+        raise HTTPException(status_code=403, detail="Invalid credentials")
+
+    user_service = UserService(db_session)
+    user = await user_service.get_user_by_external_id(int(user_external_id))
+    if user is None:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    return user.id
+
+
+async def verify_user_ws(
+    db_session: Annotated[
+        AsyncSession,
+        Depends(db_helper.session_getter),
+    ],
+    user_external_id: str = Query(None),
+    hash: str = Query(None),
+):
+    if not user_external_id or not hash:
+        raise HTTPException(status_code=400, detail="Missing query parameters")
 
     expected_hash = generate_hash(user_external_id, SECRET_KEY)
 
