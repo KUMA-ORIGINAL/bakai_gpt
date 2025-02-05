@@ -54,6 +54,7 @@ def create_app(
         lifespan=lifespan,
         docs_url=None if create_custom_static_urls else "/docs",
         redoc_url=None if create_custom_static_urls else "/redoc",
+        openapi_url='/api/openapi.json'
     )
     if create_custom_static_urls:
         register_static_docs_routes(app)
