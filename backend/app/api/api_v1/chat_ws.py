@@ -96,6 +96,7 @@ async def chatroom_ws_sender(websocket: WebSocket, channel: str, chat, chat_serv
                 ):
                     await websocket.send_text(response_text)
                     full_response += response_text
+                await websocket.send_text("[COMPLETE]")
 
                 await chat_service.create_message(chat.id, sender="assistant", content=full_response)
                 logger.info(f"Assistant response sent: {full_response}")
