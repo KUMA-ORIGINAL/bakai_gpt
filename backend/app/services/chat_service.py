@@ -7,7 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 import logging
 
 from models import db_helper, Chat, Message
-from schemas.chat import ChatSchema
+from schemas.chat import ChatSchema, ChatCreateSchema
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +15,24 @@ logger = logging.getLogger(__name__)
 class ChatService:
     def __init__(self, db_session):
         self.db_session = db_session
+
+    async def get_all_chats(self, user_id: int) -> List[Chat]:
+        try:
+            stmt = (
+                select(Chat)
+                .where(Chat.user_id == user_id)
+                .options(
+                    joinedload(Chat.user),
+                    joinedload(Chat.assistant),
+                )
+            )
+            result = await self.db_session.execute(stmt)
+            chats = result.scalars().all()
+            return chats
+        except SQLAlchemyError as e:
+            logger.error(
+                f"Error getting chats for user {user_id}: {str(e)}", exc_info=True)
+            raise e
 
     async def update_chat(self, chat_id: int, **kwargs) -> ChatSchema:
         try:
@@ -31,14 +49,11 @@ class ChatService:
             await self.db_session.rollback()
             raise e
 
-    async def get_chat(self, user_id: int, assistant_id: int) -> Optional[Chat]:
+    async def get_chat(self, chat_id: int) -> Optional[Chat]:
         try:
             stmt = (
                 select(Chat)
-                .where(
-                    Chat.user_id == user_id,
-                    Chat.assistant_id == assistant_id
-                )
+                .where(Chat.id == chat_id)
                 .options(
                     joinedload(Chat.user),
                     joinedload(Chat.assistant),
@@ -50,17 +65,16 @@ class ChatService:
             return chat
         except SQLAlchemyError as e:
             logger.error(
-                f"Error getting chat for user {user_id} and assistant {assistant_id}: {str(e)}",
-                exc_info=True)
+                f"Error getting chat for id {chat_id}: {str(e)}", exc_info=True)
             raise e
 
     async def create_chat(self, user_id: int, assistant_id: int) -> Chat:
         try:
-            logger.info(f"Creating new chat for user {user_id} and assistant {assistant_id}")
             chat = Chat(user_id=user_id, assistant_id=assistant_id)
             self.db_session.add(chat)
             await self.db_session.commit()
             await self.db_session.refresh(chat)
+            logger.info(f"Creating new chat for user {user_id} and assistant {assistant_id}")
             return chat
         except SQLAlchemyError as e:
             logger.error(

@@ -1,40 +1,13 @@
+import hashlib
 from typing import Annotated
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import db_helper, User, Assistant
+from models import db_helper
 from services import ChatService
 from services.assistant_service import AssistantService
 from services.user_service import UserService
-
-
-async def get_current_user(
-    external_id: int,
-    db_session: Annotated[
-        AsyncSession,
-        Depends(db_helper.session_getter),
-    ]
-) -> User:
-    user_service = UserService(db_session)
-    user = await user_service.get_user_by_external_id(external_id)
-    if user is None:
-        raise HTTPException(status_code=404, detail="Пользователь не найден")
-    return user.id
-
-
-async def get_assistant(
-    assistant_id: int,
-    db_session: Annotated[
-        AsyncSession,
-        Depends(db_helper.session_getter),
-    ]
-) -> Assistant:
-    assistant_service = AssistantService(db_session)
-    assistant = await assistant_service.get_assistant_by_id(assistant_id)
-    if assistant is None:
-        raise HTTPException(status_code=404, detail="Ассистент не найден")
-    return assistant.id
 
 
 async def get_assistant_service(
@@ -53,3 +26,35 @@ async def get_user_service(
         db_session: Annotated[AsyncSession, Depends(db_helper.session_getter)]
 ):
     return UserService(db_session)
+
+
+SECRET_KEY = "bakaigpt"
+
+
+def generate_hash(user_id: str, secret_key: str) -> str:
+    data = f"{user_id}:{secret_key}"
+    return hashlib.sha256(data.encode()).hexdigest()
+
+
+async def verify_user(
+    db_session: Annotated[
+        AsyncSession,
+        Depends(db_helper.session_getter),
+    ],
+    user_external_id: str = Header(None),
+    hash: str = Header(None),
+):
+    if not user_external_id or not hash:
+        raise HTTPException(status_code=400, detail="Missing headers")
+
+    expected_hash = generate_hash(user_external_id, SECRET_KEY)
+
+    if hash != expected_hash:
+        raise HTTPException(status_code=403, detail="Invalid credentials")
+
+    user_service = UserService(db_session)
+    user = await user_service.get_user_by_external_id(int(user_external_id))
+    if user is None:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+
+    return user.id

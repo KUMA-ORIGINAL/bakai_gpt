@@ -9,7 +9,6 @@ from schemas.user import UserSchema
 
 
 class ChatCreateSchema(BaseModel):
-    user_id: int
     assistant_id: int
 
 
@@ -18,10 +17,21 @@ class ChatUpdateSchema(BaseModel):
     assistant_id: Optional[int] = None
 
 
+class ChatListSchema(BaseModel):
+    id: int
+    name: Optional[str] = None
+
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class ChatSchema(BaseModel):
     id: int
+    name: Optional[str] = None
     user: UserSchema
-    thread_id: Optional[str] = None
     assistant: AssistantSchema
     messages: List[MessageSchema] = []
 

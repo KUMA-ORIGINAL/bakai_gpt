@@ -3,8 +3,7 @@ from pydantic import ConfigDict
 
 
 class UserBaseSchema(BaseModel):
-    external_id: int
-    full_name: str
+    user_external_id: int
 
 
 class UserCreateSchema(UserBaseSchema):

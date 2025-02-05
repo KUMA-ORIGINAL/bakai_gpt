@@ -4,16 +4,13 @@ import anyio
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, WebSocketException
 from starlette import status
 
-from api.dependencies import get_chat_service, get_user_service, get_assistant_service
-from schemas.message_to_channel_schema import MessageToChannelSchema
-from services.assistant_service import AssistantService
+from api.dependencies import get_chat_service, verify_user
 from services.openai_service import get_assistant_response
 from managers.connection import ConnectionManager
 from services.chat_service import ChatService
 import logging
 
 from services.redis_service import broadcast
-from services.user_service import UserService
 
 router = APIRouter(tags=['ws'])
 manager = ConnectionManager()
@@ -23,59 +20,41 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@router.websocket("/chats/{user_id}/{assistant_id}")
+@router.websocket("/chats/{chat_id}")
 async def chat_websocket(
     websocket: WebSocket,
-    assistant_id: int,
-    user_id: int,
+    chat_id: int,
     chat_service: Annotated[ChatService, Depends(get_chat_service)],
-    user_service: Annotated[UserService, Depends(get_user_service)],
-    assistant_service: Annotated[AssistantService, Depends(get_assistant_service)],
+    user_id: int = Depends(verify_user)
 ):
-
     await websocket.accept()
 
     try:
-        user = await user_service.get_user_by_id(user_id)
-        if not user:
+        chat = await chat_service.get_chat(chat_id)
+        if not chat:
             raise WebSocketException(
                 code=status.WS_1008_POLICY_VIOLATION,
-                reason=f"User with ID {user_id} does not exist."
+                reason=f"Chat with ID {chat_id} does not exist."
             )
-        assistant = await assistant_service.get_assistant_by_id(assistant_id)
-        if not assistant:
-            raise WebSocketException(
-                code=status.WS_1008_POLICY_VIOLATION,
-                reason=f"Assistant with ID {assistant_id} does not exist."
-            )
-
-        logger.info(f"Client {user_id} connected to assistant {assistant_id}")
+        logger.info(f"Client {chat.user_id} connected to chat {chat_id}")
 
         await websocket.send_json({'message': 'Connected',
-                                   'user_id': user_id,
-                                   'assistant_id': assistant_id})
-        logger.info(f"Sent connection confirmation to user {user_id}")
-
-        chat = await chat_service.get_chat(user_id, assistant_id)
-        if not chat:
-            chat = await chat_service.create_chat(user_id, assistant_id)
-
-        channel_id = f"chat_{user_id}_{assistant_id}"
-
-        logger.info(f"Chat {chat.id} initialized between user {user_id} and assistant {assistant_id}")
+                                   'user_id': chat.user_id,
+                                   'assistant_id': chat.assistant_id})
+        channel_id = f"chat_{chat_id}"
 
         async with anyio.create_task_group() as task_group:
             async def run_chatroom_ws_receiver() -> None:
                 await chatroom_ws_receiver(websocket, channel_id, chat, chat_service)
                 task_group.cancel_scope.cancel()
             task_group.start_soon(run_chatroom_ws_receiver)
-            await chatroom_ws_sender(websocket, channel_id, chat, chat_service, assistant)
+            await chatroom_ws_sender(websocket, channel_id, chat, chat_service, chat.assistant)
 
     except WebSocketException as e:
         logger.error(f"WebSocket error: {e}", exc_info=True)
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
     except WebSocketDisconnect:
-        logger.warning(f"User {user_id} disconnected.")
+        logger.warning(f"Chat {chat_id} disconnected.")
         await websocket.close(code=status.WS_1001_GOING_AWAY)
     except Exception as e:
         logger.error(f"An error occurred: {e}", exc_info=True)
@@ -86,11 +65,13 @@ async def chatroom_ws_receiver(websocket: WebSocket, channel: str, chat, chat_se
     try:
         async for data in websocket.iter_json():
             message_sent = data["message"]
-            user_id = data["user_id"]
 
-            logger.info(f"Received message from user {user_id}: {message_sent}")
+            logger.info(f"Received message from chat {chat.id}: {message_sent}")
 
-            message = MessageToChannelSchema(message=message_sent, channel_id=channel, user_id=user_id)
+            if not chat.name:
+                await chat_service.update_chat(chat.id, name=message_sent[:30])
+                logger.info(f"Chat title updated to: {message_sent}")
+
             await chat_service.create_message(chat.id, sender="user", content=message_sent)
 
             await broadcast.publish(channel=channel, message=message_sent)
@@ -111,7 +92,7 @@ async def chatroom_ws_sender(websocket: WebSocket, channel: str, chat, chat_serv
 
                 full_response = ""
                 async for response_text in get_assistant_response(
-                        user_message, chat, assistant, chat_service
+                    user_message, chat, assistant, chat_service
                 ):
                     await websocket.send_text(response_text)
                     full_response += response_text
