@@ -1,10 +1,38 @@
 [
     {
-        "name": "Math Tutor",
-        "description": "Helps with math problems"
+        "name": "Эксперт по автоматизации",
+        "description": "Помогает автоматизировать процессы и улучшить рабочие потоки",
+        "photo": "https://cdn-icons-png.flaticon.com/512/14294/14294827.png"
     },
     {
-        "name": "History Expert",
-        "description": "Answers history-related questions"
+        "name": "HR-консультант",
+        "description": "Оказывает консультации по вопросам управления персоналом и найму сотрудников",
+        "photo": "https://cdn-icons-png.flaticon.com/512/14294/14294827.png"
+    },
+    {
+        "name": "Эксперт по финансам",
+        "description": "Предоставляет консультации по финансовому планированию и управлению бюджетом",
+        "photo": "https://cdn-icons-png.flaticon.com/512/14294/14294827.png"
+    },
+    {
+        "name": "Юридический консультант",
+        "description": "Оказывает юридическую помощь и консультации по вопросам права",
+        "photo": "https://cdn-icons-png.flaticon.com/512/14294/14294827.png"
+
+    },
+    {
+        "name": "Маркетолог",
+        "description": "Помогает с разработкой маркетинговых стратегий и продвижением бренда",
+        "photo": "https://cdn-icons-png.flaticon.com/512/14294/14294827.png"
+    },
+    {
+        "name": "Консультант по налогам",
+        "description": "Консультирует по вопросам налогообложения и соблюдения налоговых требований",
+        "photo": "https://cdn-icons-png.flaticon.com/512/14294/14294827.png"
+    },
+    {
+        "name": "Бухгалтер",
+        "description": "Помогает с ведением бухгалтерского учета и финансовой отчетности",
+        "photo": "https://cdn-icons-png.flaticon.com/512/14294/14294827.png"
     }
 ]

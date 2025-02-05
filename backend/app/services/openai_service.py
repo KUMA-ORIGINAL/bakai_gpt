@@ -11,16 +11,11 @@ api_key = settings.openai.api_key
 
 client = AsyncOpenAI(api_key=api_key)
 
-bakai_assistant_id = settings.openai.bakai_assistant_id
-
 
 async def get_assistant_response(
         user_message: str, chat: Chat, assistant: Assistant, chat_service: ChatService
 ) -> AsyncGenerator[str, None]:
-    if assistant.name == "Math Tutor":
-        assistant_id = bakai_assistant_id
-    elif assistant.name == "History Expert":
-        assistant_id = bakai_assistant_id
+    assistant_id = get_assistant_id(assistant)
     try:
         if assistant_id:
             assistant = await client.beta.assistants.retrieve(assistant_id)
@@ -47,3 +42,16 @@ async def get_assistant_response(
     except Exception as e:
         print(f"Ошибка при запросе к OpenAI API: {e}")
         yield "Извините, произошла ошибка."
+
+
+def get_assistant_id(assistant: Assistant):
+    assistants_id = {
+        'Эксперт по автоматизации': settings.openai.bakai_automate_id,
+        'HR-консультант': settings.openai.bakai_hr_id,
+        'Эксперт по финансам': settings.openai.bakai_finance_id,
+        'Юридический консультант': settings.openai.bakai_legal_id,
+        'Маркетолог': settings.openai.bakai_marketer_id,
+        'Консультант по налогам': settings.openai.bakai_tax_id,
+        'Бухгалтер': settings.openai.bakai_accountant_id
+    }
+    return assistants_id[assistant.name]

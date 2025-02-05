@@ -48,7 +48,14 @@ class ApiPrefix(BaseModel):
 
 class OpenAiConfig(BaseSettings):
     api_key: str = 'api_key'
-    bakai_assistant_id: str = 'bakai_assistant_id'
+    bakai_automate_id: str = 'BAKAI_AUTOMATE_ID'
+    bakai_hr_id: str = 'BAKAI_HR_ID'
+    bakai_finance_id: str = 'BAKAI_FINANCE_ID'
+    bakai_legal_id: str = 'BAKAI_LEGAL_ID'
+    bakai_marketer_id: str = 'BAKAI_MARKETER_ID'
+    bakai_tax_id: str = 'BAKAI_TAX_ID'
+    bakai_accountant_id: str = 'BAKAI_ACCOUNTANT_ID'
+
 
 
 class DatabaseConfig(BaseModel):
