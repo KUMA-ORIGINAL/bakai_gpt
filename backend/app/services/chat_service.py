@@ -1,6 +1,6 @@
 from typing import Annotated, List, Optional
 from fastapi import Depends
-from sqlalchemy import select, update
+from sqlalchemy import select, update, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.exc import SQLAlchemyError
@@ -25,6 +25,7 @@ class ChatService:
                     joinedload(Chat.user),
                     joinedload(Chat.assistant),
                 )
+                .order_by(Chat.created_at.desc())
             )
             result = await self.db_session.execute(stmt)
             chats = result.scalars().all()
@@ -57,7 +58,7 @@ class ChatService:
                 .options(
                     joinedload(Chat.user),
                     joinedload(Chat.assistant),
-                    selectinload(Chat.messages),
+                    selectinload(Chat.messages)
                 )
             )
             result = await self.db_session.execute(stmt)

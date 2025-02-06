@@ -14,5 +14,5 @@ class Chat(Base, IntIdPkMixin, TimestampMixin):
     user: Mapped["User"] = relationship("User", back_populates="chats", lazy="joined")
     assistant: Mapped["Assistant"] = relationship("Assistant", lazy="joined")
     messages: Mapped[list["Message"]] = relationship("Message", back_populates="chat",
-                                                     lazy="selectin", cascade='all, delete-orphan')
-
+                                                     lazy="selectin", cascade='all, delete-orphan',
+                                                     order_by="Message.created_at.desc()")
