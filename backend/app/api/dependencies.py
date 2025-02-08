@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, Header, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from config import settings
 from models import db_helper
 from services import ChatService
 from services.assistant_service import AssistantService
@@ -28,7 +29,7 @@ async def get_user_service(
     return UserService(db_session)
 
 
-SECRET_KEY = "bakaigpt"
+SECRET_KEY = settings.openai.secret_hash_key
 
 
 def generate_hash(user_id: str, secret_key: str) -> str:

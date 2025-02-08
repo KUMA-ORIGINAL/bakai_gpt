@@ -40,13 +40,15 @@ services:
   adminer:
     image: adminer
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - database
 
   redis:
     image: redis:7.4-alpine
     container_name: redis
-    ports:
-      - '6379:6379'
+#    ports:
+#      - '6379:6379'
     volumes:
       - redis_data:/data
     healthcheck:

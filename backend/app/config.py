@@ -47,6 +47,7 @@ class ApiPrefix(BaseModel):
 
 
 class OpenAiConfig(BaseSettings):
+    secret_hash_key: str = 'SECRET_HASH_KEY'
     api_key: str = 'api_key'
     bakai_automate_id: str = 'BAKAI_AUTOMATE_ID'
     bakai_hr_id: str = 'BAKAI_HR_ID'
