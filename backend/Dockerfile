@@ -22,5 +22,5 @@ RUN pip install --no-cache /wheels/*
 
 COPY app app
 
-CMD app/alembic upgrade head
+CMD alembic upgrade head
 CMD python run_main.py
