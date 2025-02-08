@@ -47,11 +47,9 @@ async def get_assistant_response(
 def get_assistant_id(assistant: Assistant):
     assistants_id = {
         'Эксперт по автоматизации': settings.openai.bakai_automate_id,
-        'HR-консультант': settings.openai.bakai_hr_id,
-        'Эксперт по финансам': settings.openai.bakai_finance_id,
-        'Юридический консультант': settings.openai.bakai_legal_id,
+        'Финансист': settings.openai.bakai_finance_id,
+        'Юрист': settings.openai.bakai_legal_id,
         'Маркетолог': settings.openai.bakai_marketer_id,
-        'Консультант по налогам': settings.openai.bakai_tax_id,
         'Бухгалтер': settings.openai.bakai_accountant_id
     }
     return assistants_id[assistant.name]
