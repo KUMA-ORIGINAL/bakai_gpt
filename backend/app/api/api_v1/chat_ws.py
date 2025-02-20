@@ -68,9 +68,8 @@ async def chatroom_ws_receiver(websocket: WebSocket, channel: str, chat, chat_se
 
             logger.info(f"Received message from chat {chat.id}: {message_sent}")
 
-            if not chat.name:
-                await chat_service.update_chat(chat.id, name=message_sent[:30])
-                logger.info(f"Chat title updated to: {message_sent}")
+            await chat_service.update_chat(chat.id, name=message_sent[:30])
+            logger.info(f"Chat title updated to: {message_sent}")
 
             await chat_service.create_message(chat.id, sender="user", content=message_sent)
 
