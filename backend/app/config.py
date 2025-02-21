@@ -61,7 +61,7 @@ class OpenAiConfig(BaseSettings):
 
 class DatabaseConfig(BaseModel):
     POSTGRES_USER: str = 'postgres'
-    POSTGRES_PASSWORD: SecretStr = 'PASSWORD'
+    POSTGRES_PASSWORD: str = 'postgres'
     POSTGRES_DB: str = 'postgres'
     POSTGRES_HOST: str = 'database'  # Добавьте это поле
     POSTGRES_PORT: int = 5432
@@ -83,7 +83,7 @@ class DatabaseConfig(BaseModel):
         template = "postgresql://{user}:{password}@database/{database}"
         return template.format(
             user=settings.db.POSTGRES_USER,
-            password=settings.db.POSTGRES_PASSWORD.get_secret_value(),
+            password=settings.db.POSTGRES_PASSWORD,
             database=settings.db.POSTGRES_DB,
         )
 
@@ -91,7 +91,7 @@ class DatabaseConfig(BaseModel):
     def async_url(self):
         template = "postgresql+asyncpg://{user}:{password}@database/{database}".format(
             user=settings.db.POSTGRES_USER,
-            password=settings.db.POSTGRES_PASSWORD.get_secret_value(),
+            password=settings.db.POSTGRES_PASSWORD,
             host=settings.db.POSTGRES_HOST,
             database=settings.db.POSTGRES_DB,
         )

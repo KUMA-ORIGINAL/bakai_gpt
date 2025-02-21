@@ -20,7 +20,7 @@ COPY --from=builder $PROJECT_DIR/requirements.txt .
 
 RUN pip install --no-cache /wheels/*
 
-COPY app app
+COPY app .
 
-CMD alembic upgrade head
-CMD python run_main.py
+CMD alembic upgrade head & python run_main.py
+

@@ -18,7 +18,6 @@ async def get_assistant_response(
     assistant_id = get_assistant_id(assistant)
     try:
         if assistant_id:
-            assistant = await client.beta.assistants.retrieve(assistant_id)
             if not chat.thread_id:
                 thread = await client.beta.threads.create()
                 thread_id = thread.id
@@ -32,11 +31,13 @@ async def get_assistant_response(
             )
             async with client.beta.threads.runs.stream(
                 thread_id=thread_id,
-                assistant_id=assistant.id,
+                assistant_id=assistant_id,
             ) as stream:
                 async for event in stream:  # Итерируем через поток событий
                     if event.event == "thread.message.delta":
-                        yield event.data.delta.content[0].text.value  # Отправляем текст сразу,
+                        yield event.data.delta.content[0].text.value
+                    elif event.event == "done":
+                        break
                 await asyncio.sleep(0.5)  # Проверяем статус выполнения каждые 1 сек
 
     except Exception as e:
