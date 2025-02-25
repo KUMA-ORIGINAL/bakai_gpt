@@ -20,6 +20,7 @@ class ChatUpdateSchema(BaseModel):
 class ChatListSchema(BaseModel):
     id: int
     name: Optional[str] = None
+    assistant: AssistantSchema
 
     created_at: datetime
     updated_at: datetime
