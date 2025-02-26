@@ -104,6 +104,11 @@ class RedisConfig(BaseModel):
     REDIS_DB: int = 0
 
 
+class DocsConfig(BaseModel):
+    USERNAME: str = 'admin'
+    PASSWORD: str = 'admin'
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env.dev", '.env.prod'),
@@ -118,6 +123,7 @@ class Settings(BaseSettings):
     redis: RedisConfig = RedisConfig()
     openai: OpenAiConfig = OpenAiConfig()
     db: DatabaseConfig = DatabaseConfig()
+    docs: DocsConfig = DocsConfig()
 
 
 settings = Settings()

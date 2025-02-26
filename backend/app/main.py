@@ -21,7 +21,7 @@ main_app.include_router(
 )
 main_app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Разрешить все источники
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

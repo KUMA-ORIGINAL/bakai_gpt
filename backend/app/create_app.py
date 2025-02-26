@@ -1,15 +1,15 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
 
-
 from models import db_helper
 from services.redis_service import broadcast
+from utils.dependencies_for_docs import get_current_user_for_docs
 from utils.fixtures import load_fixtures
 
 
@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
 
 
 def register_static_docs_routes(app: FastAPI):
-    @app.get("/api/docs", include_in_schema=False)
+    @app.get("/api/docs", include_in_schema=False, dependencies=[Depends(get_current_user_for_docs)])
     async def custom_swagger_ui_html():
         return get_swagger_ui_html(
             openapi_url=app.openapi_url,
