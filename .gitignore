@@ -2,7 +2,7 @@
 **/__pycache__
 
 **/app/media
-**/static
+#**/static
 
 .env.dev
 .env.prod
