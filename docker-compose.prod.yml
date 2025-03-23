@@ -11,8 +11,7 @@ services:
       - 8000
     volumes:
       - ./backend/app:/app
-      - static_volume:/app/static
-      - media_volume:/app/media
+      - static_volume:/backend/app/static
     depends_on:
       database:
         condition: service_healthy
@@ -65,8 +64,7 @@ services:
       - '80:80'
       - '443:443'
     volumes:
-      - static_volume:/app/static
-      - media_volume:/app/media
+      - static_volume:/backend/app/static
       - certs:/etc/letsencrypt
     depends_on:
       - backend
