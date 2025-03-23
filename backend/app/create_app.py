@@ -6,6 +6,7 @@ from fastapi.openapi.docs import (
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
+from fastapi.staticfiles import StaticFiles
 
 from models import db_helper
 from services.redis_service import broadcast
@@ -56,6 +57,7 @@ def create_app(
         redoc_url=None if create_custom_static_urls else "/redoc",
         openapi_url='/api/openapi.json'
     )
+    app.mount("/static", StaticFiles(directory="static"), name="static")
     if create_custom_static_urls:
         register_static_docs_routes(app)
     return app

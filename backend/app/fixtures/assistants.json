@@ -1,28 +1,27 @@
 [
     {
-        "name": "Маркетолог",
+        "name": "Маркетолог-Мээрим",
         "description": "Поможет с продвижением бизнеса",
-        "photo": "https://i.ibb.co/d4cJLSDv/image-2025-02-08-00-32-53.png"
+        "photo": "Marketer - Meerim.webp"
     },
     {
-        "name": "Юрист",
+        "name": "Юрист-Айбек",
         "description": "Консультации по договорам, спорам и правовым вопросам",
-        "photo": "https://i.ibb.co/WW1kcyZy/image-2025-02-08-00-32-24.png"
+        "photo": "Aibek yurist.webp"
     },
     {
-        "name": "Бухгалтер",
+        "name": "Бухгалтер-Айсулуу",
         "description": "Поможет с учетом, отчетностью и налогами компании",
-        "photo": "https://i.ibb.co/C3Ms1rjn/image-2025-02-08-00-29-44.png"
+        "photo": "buhgalter aisuluu.webp"
     },
     {
-        "name": "Финансист",
+        "name": "Финансист-Тахир",
         "description": "Поможет планировать бюджет, инвестиции и расходы",
-        "photo": "https://i.ibb.co/Z6rbdGVV/image-2025-02-08-00-31-20.png"
+        "photo": "finansist tahir.webp"
     },
     {
-        "name": "Эксперт по автоматизации",
+        "name": "Эксперт по автоматизации-Мирель",
         "description": "Оптимизирует бизнес-процессы и внедрит автоматизацию",
-        "photo": "https://i.ibb.co/1tywm1Q8/image-2025-02-08-00-31-53.png"
+        "photo": "avtom Mirel.webp"
     }
 ]
-

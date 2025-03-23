@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from openai import AsyncOpenAI
 from typing import AsyncGenerator
@@ -10,6 +11,20 @@ from services.chat_service import ChatService
 api_key = settings.openai.api_key
 
 client = AsyncOpenAI(api_key=api_key)
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def get_assistant_id(assistant: Assistant):
+    assistants_id = {
+        'Эксперт по автоматизации-Мирель': settings.openai.bakai_automate_id,
+        'Финансист-Тахир': settings.openai.bakai_finance_id,
+        'Юрист-Айбек': settings.openai.bakai_legal_id,
+        'Маркетолог-Мээрим': settings.openai.bakai_marketer_id,
+        'Бухгалтер-Айсулуу': settings.openai.bakai_accountant_id
+    }
+    return assistants_id[assistant.name]
 
 
 async def get_assistant_response(
@@ -43,14 +58,3 @@ async def get_assistant_response(
     except Exception as e:
         print(f"Ошибка при запросе к OpenAI API: {e}")
         yield "Извините, произошла ошибка."
-
-
-def get_assistant_id(assistant: Assistant):
-    assistants_id = {
-        'Эксперт по автоматизации': settings.openai.bakai_automate_id,
-        'Финансист': settings.openai.bakai_finance_id,
-        'Юрист': settings.openai.bakai_legal_id,
-        'Маркетолог': settings.openai.bakai_marketer_id,
-        'Бухгалтер': settings.openai.bakai_accountant_id
-    }
-    return assistants_id[assistant.name]
