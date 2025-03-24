@@ -1,11 +1,11 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 
 
 class AssistantSchema(BaseModel):
     id: int
     name: str
     description: str | None
-    photo: HttpUrl
+    photo: str | None
 
     class Config:
         from_attributes = True
