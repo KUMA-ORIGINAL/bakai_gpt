@@ -20,10 +20,3 @@ async def load_fixtures(session: AsyncSession, fixture_path: str = "fixtures/ass
             session.add(assistant)
 
     await session.commit()
-
-
-Маркетолог-Мээрим	Поможет с продвижением бизнеса	11	/static/photos/Marketer - Meerim.webp
- edit	Юрист-Айбек	Консультации по договорам, спорам и правовым вопросам	12	/static/photos/Aibek yurist.webp
- edit	Бухгалтер-Айсулуу	Поможет с учетом, отчетностью и налогами компании	13	/static/photos/buhgalter aisuluu.webp
- edit	Финансист-Тахир	Поможет планировать бюджет, инвестиции и расходы	14	/static/photos/finansist tahir.webp
- edit	Эксперт по автоматизации-Мирель	Оптимизирует бизнес-процессы и внедрит автоматизацию	15	/static/photos/avtom Mirel.webp
