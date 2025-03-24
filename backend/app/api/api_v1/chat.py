@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from api.dependencies import get_chat_service, get_assistant_service, verify_user
+from config import settings
 from schemas.chat import ChatSchema, ChatListSchema, ChatCreateSchema
 from services.assistant_service import AssistantService
 from services.chat_service import ChatService
@@ -16,6 +17,9 @@ async def get_chats(
     user_id: int = Depends(verify_user)
 ):
     chats = await chat_service.get_all_chats(user_id)
+    for chat in chats:
+        chat.assistant.photo = f"{settings.BASE_URL}{chat.assistant.photo}"
+
     return chats
 
 
@@ -43,6 +47,8 @@ async def get_chat(
     chat = await chat_service.get_chat(chat_id)
     if not chat:
         raise HTTPException(status_code=404, detail=f"Chat with id {chat_id} does not exist.")
+
+    chat.assistant.photo = f"{settings.BASE_URL}{chat.assistant.photo}"
     return chat
 
 

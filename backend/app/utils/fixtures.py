@@ -14,7 +14,6 @@ async def load_fixtures(session: AsyncSession, fixture_path: str = "fixtures/ass
             select(Assistant).where(Assistant.name == assistant_data["name"])
         )
         if not result.scalar_one_or_none():
-            # Формируем правильный путь к файлу
             assistant_data["photo"] = f"{STATIC_DIR}/{assistant_data['photo']}"
             assistant = Assistant(**assistant_data)
             session.add(assistant)
