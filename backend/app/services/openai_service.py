@@ -35,16 +35,7 @@ async def get_assistant_response(
     file_ids: list = None,  # [{file_id, filename}]
     b64_images: list = None  # [{file_id, filename}]
 ) -> AsyncGenerator[str, None]:
-
-    assistant = await client.beta.assistants.create(
-        name="Читающий Документы",
-        instructions="Ты помощник, отвечающий на основе приложенных файлов.",
-        model="gpt-4-1106-preview",
-        tools=[{"type": "code_interpreter"}]
-    )
-
-    # assistant_id = get_assistant_id(assistant)
-    assistant_id = assistant.id
+    assistant_id = get_assistant_id(assistant)
 
     try:
         if not chat.thread_id:
