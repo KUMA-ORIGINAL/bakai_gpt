@@ -1,3 +1,6 @@
+import base64
+import json
+from pathlib import Path
 from typing import Annotated
 
 import anyio
@@ -5,7 +8,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, WebSocke
 from starlette import status
 
 from api.dependencies import get_chat_service, verify_user_ws
-from services.openai_service import get_assistant_response
+from services.openai_service import get_assistant_response, upload_file_to_openai
 from managers.connection import ConnectionManager
 from services.chat_service import ChatService
 import logging
@@ -64,17 +67,17 @@ async def chat_websocket(
 async def chatroom_ws_receiver(websocket: WebSocket, channel: str, chat, chat_service):
     try:
         async for data in websocket.iter_json():
-            message_sent = data["message"]
+            text = data.get("text")
+            files = data.get("files", [])
 
-            logger.info(f"Received message from chat {chat.id}: {message_sent}")
+            await chat_service.update_chat(chat.id, name=text[:30])
+            await chat_service.create_message(chat.id, sender="user", content=text)
 
-            await chat_service.update_chat(chat.id, name=message_sent[:30])
-            logger.info(f"Chat title updated to: {message_sent}")
-
-            await chat_service.create_message(chat.id, sender="user", content=message_sent)
-
-            await broadcast.publish(channel=channel, message=message_sent)
-            logger.info(f"Published message to channel {channel}: {message_sent}")
+            await broadcast.publish(channel=channel, message=json.dumps({
+                "text": text,
+                "files": files
+            }))
+            logger.info(f"Published message to channel {channel}: text + {len(files)} files.")
 
     except WebSocketDisconnect:
         logger.warning(f"User disconnected during message reception.")
@@ -86,18 +89,39 @@ async def chatroom_ws_sender(websocket: WebSocket, channel: str, chat, chat_serv
     try:
         async with broadcast.subscribe(channel=channel) as subscriber:
             async for event in subscriber:
-                user_message = event.message
-                logger.info(f"Received event for channel {channel}: {user_message}")
+                event_data = json.loads(event.message)
+
+                user_text = event_data.get("text")
+                uploaded_files = event_data.get("files", [])
+
+                logger.info(f"Received event for channel {channel}: {user_text} + files: {uploaded_files}")
+
+                file_ids = []
+                b64_images = []
+
+                for f in uploaded_files:
+                    if f['type'] == 'image':
+                        b64_images.append(f['base64_image'])
+                    elif f['type'] == "file":
+                        file_ids.append(f['file_id'])
+                    else:
+                        logger.info(f"Skipping unsupported file: {f}")
 
                 full_response = ""
                 async for response_text in get_assistant_response(
-                    user_message, chat, assistant, chat_service
+                    user_text,
+                    chat,
+                    assistant,
+                    chat_service,
+                    file_ids=file_ids,  # только допустимые
+                    b64_images=b64_images   # нововведение
                 ):
                     await websocket.send_text(response_text)
                     full_response += response_text
-                await websocket.send_text("[COMPLETE]")
 
+                await websocket.send_text("[COMPLETE]")
                 await chat_service.create_message(chat.id, sender="assistant", content=full_response)
+
                 logger.info(f"Assistant response sent: {full_response}")
 
     except WebSocketDisconnect:
