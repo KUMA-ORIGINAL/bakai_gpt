@@ -17,4 +17,6 @@ def get_app_options(
         "timeout": timeout,
         "workers": workers,
         "worker_class": "uvicorn.workers.UvicornWorker",
+        "forwarded_allow_ips": "*",
+        "proxy_headers": True
     }
