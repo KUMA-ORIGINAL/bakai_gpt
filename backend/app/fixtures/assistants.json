@@ -1,27 +1,32 @@
 [
-    {
-        "name": "Маркетолог-Мээрим",
-        "description": "Поможет с продвижением бизнеса",
-        "photo": "Marketer - Meerim.webp"
-    },
-    {
-        "name": "Юрист-Айбек",
-        "description": "Консультации по договорам, спорам и правовым вопросам",
-        "photo": "Aibek yurist.webp"
-    },
-    {
-        "name": "Бухгалтер-Айсулуу",
-        "description": "Поможет с учетом, отчетностью и налогами компании",
-        "photo": "buhgalter aisuluu.webp"
-    },
-    {
-        "name": "Финансист-Тахир",
-        "description": "Поможет планировать бюджет, инвестиции и расходы",
-        "photo": "finansist tahir.webp"
-    },
-    {
-        "name": "Эксперт по автоматизации-Мирель",
-        "description": "Оптимизирует бизнес-процессы и внедрит автоматизацию",
-        "photo": "avtom Mirel.webp"
-    }
+  {
+    "name": "Маркетолог-Мээрим",
+    "description": "Поможет с продвижением бизнеса",
+    "photo": "Marketer - Meerim.webp",
+    "openai_id": "asst_kZwavbtsU0dpCL3d3NwFVljQ"
+  },
+  {
+    "name": "Юрист-Айбек",
+    "description": "Консультации по договорам, спорам и правовым вопросам",
+    "photo": "Aibek yurist.webp",
+    "openai_id": "asst_CytTPaYM9U8fWvaF07zD4xBh"
+  },
+  {
+    "name": "Бухгалтер-Айсулуу",
+    "description": "Поможет с учетом, отчетностью и налогами компании",
+    "photo": "buhgalter aisuluu.webp",
+    "openai_id": "asst_jdX0DRb9WeUp14bGTdQvHNP3"
+  },
+  {
+    "name": "Финансист-Тахир",
+    "description": "Поможет планировать бюджет, инвестиции и расходы",
+    "photo": "finansist tahir.webp",
+    "openai_id": "asst_Eb54ckWfxPwzYaHQ4SlpJKPg"
+  },
+  {
+    "name": "Эксперт по автоматизации-Мирель",
+    "description": "Оптимизирует бизнес-процессы и внедрит автоматизацию",
+    "photo": "avtom Mirel.webp",
+    "openai_id": "asst_LmQzmmTq62aDi4ZEFZWRBhjI"
+  }
 ]

@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from openai import AsyncOpenAI
@@ -16,17 +15,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def get_assistant_id(assistant: Assistant):
-    assistants_id = {
-        'Эксперт по автоматизации-Мирель': settings.openai.bakai_automate_id,
-        'Финансист-Тахир': settings.openai.bakai_finance_id,
-        'Юрист-Айбек': settings.openai.bakai_legal_id,
-        'Маркетолог-Мээрим': settings.openai.bakai_marketer_id,
-        'Бухгалтер-Айсулуу': settings.openai.bakai_accountant_id
-    }
-    return assistants_id[assistant.name]
-
-
 async def get_assistant_response(
     user_message: str,
     chat: Chat,
@@ -35,7 +23,6 @@ async def get_assistant_response(
     file_ids: list = None,  # [{file_id, filename}]
     b64_images: list = None  # [{file_id, filename}]
 ) -> AsyncGenerator[str, None]:
-    assistant_id = get_assistant_id(assistant)
 
     try:
         if not chat.thread_id:
@@ -73,7 +60,7 @@ async def get_assistant_response(
             attachments=attachments or None,
         )
 
-        async with client.beta.threads.runs.stream(thread_id=thread_id, assistant_id=assistant_id) as stream:
+        async with client.beta.threads.runs.stream(thread_id=thread_id, assistant_id=assistant.openai_id) as stream:
             async for event in stream:
                 logger.info(f"Stream event: {event.event} → {event.data}")
                 if event.event == "thread.message.delta":

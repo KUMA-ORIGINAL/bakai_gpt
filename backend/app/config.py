@@ -49,14 +49,6 @@ class ApiPrefix(BaseModel):
 class OpenAiConfig(BaseSettings):
     secret_hash_key: str = 'SECRET_HASH_KEY'
     api_key: str = 'api_key'
-    bakai_automate_id: str = 'BAKAI_AUTOMATE_ID'
-    bakai_hr_id: str = 'BAKAI_HR_ID'
-    bakai_finance_id: str = 'BAKAI_FINANCE_ID'
-    bakai_legal_id: str = 'BAKAI_LEGAL_ID'
-    bakai_marketer_id: str = 'BAKAI_MARKETER_ID'
-    bakai_tax_id: str = 'BAKAI_TAX_ID'
-    bakai_accountant_id: str = 'BAKAI_ACCOUNTANT_ID'
-
 
 
 class DatabaseConfig(BaseModel):
@@ -109,6 +101,12 @@ class DocsConfig(BaseModel):
     PASSWORD: str = 'admin'
 
 
+class AdminConfig(BaseModel):
+    USERNAME: str = 'admin'
+    PASSWORD: str = 'admin'
+    SECRET_KEY: str = 'admin'
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(".env.template", ".env.dev", '.env.prod'),
@@ -125,6 +123,7 @@ class Settings(BaseSettings):
     openai: OpenAiConfig = OpenAiConfig()
     db: DatabaseConfig = DatabaseConfig()
     docs: DocsConfig = DocsConfig()
+    admin: AdminConfig = AdminConfig()
 
 
 settings = Settings()
