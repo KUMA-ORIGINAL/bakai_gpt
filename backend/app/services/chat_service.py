@@ -1,13 +1,11 @@
-from typing import Annotated, List, Optional
-from fastapi import Depends
-from sqlalchemy import select, update, desc
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List, Optional
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 
-from models import db_helper, Chat, Message
-from schemas.chat import ChatSchema, ChatCreateSchema
+from models import Chat, Message, File
+from schemas.chat import ChatSchema
 
 logger = logging.getLogger(__name__)
 
@@ -58,16 +56,15 @@ class ChatService:
                 .options(
                     joinedload(Chat.user),
                     joinedload(Chat.assistant),
-                    selectinload(Chat.messages)
+                    selectinload(Chat.messages).selectinload(Message.files)  # Подгружаем файлы, если нужно
                 )
             )
             result = await self.db_session.execute(stmt)
-            chat = result.scalars().first()
+            chat: Optional[Chat] = result.scalars().first()
             return chat
         except SQLAlchemyError as e:
-            logger.error(
-                f"Error getting chat for id {chat_id}: {str(e)}", exc_info=True)
-            raise e
+            logger.error(f"Error getting chat for id {chat_id}: {str(e)}", exc_info=True)
+            raise
 
     async def create_chat(self, user_id: int, assistant_id: int) -> Chat:
         try:
@@ -95,6 +92,37 @@ class ChatService:
             logger.error(f"Error creating message in chat {chat_id} from {sender}: {str(e)}", exc_info=True)
             await self.db_session.rollback()
             raise e
+
+    async def create_file(self, message_id: int, file_id: str, filename: str) -> File:
+        try:
+            file = File(message_id=message_id, file_id=file_id, filename=filename)
+            self.db_session.add(file)
+            await self.db_session.commit()
+            logger.info(f"File created for message {message_id}: {filename}")
+            return file
+        except SQLAlchemyError as e:
+            logger.error(f"Error creating file for message {message_id}: {str(e)}", exc_info=True)
+            await self.db_session.rollback()
+            raise
+
+    async def create_message_with_files(self, chat_id: int, sender: str, content: str, files: list[dict]) -> Message:
+        try:
+            message = Message(
+                chat_id=chat_id,
+                sender=sender,
+                content=content,
+                files=[
+                    File(file_id=f["file_id"], filename=f["filename"]) for f in files
+                ]
+            )
+            self.db_session.add(message)
+            await self.db_session.commit()
+            logger.info(f"Message with files created in chat {chat_id} by {sender}")
+            return message
+        except SQLAlchemyError as e:
+            logger.error(f"Error creating message with files: {e}", exc_info=True)
+            await self.db_session.rollback()
+            raise
 
     async def delete_chat(self, chat: Chat):
         try:

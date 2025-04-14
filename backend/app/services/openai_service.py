@@ -62,7 +62,6 @@ async def get_assistant_response(
 
         async with client.beta.threads.runs.stream(thread_id=thread_id, assistant_id=assistant.openai_id) as stream:
             async for event in stream:
-                logger.info(f"Stream event: {event.event} → {event.data}")
                 if event.event == "thread.message.delta":
                     delta = event.data.delta
                     if delta and delta.content:

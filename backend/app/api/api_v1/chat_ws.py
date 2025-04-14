@@ -71,7 +71,7 @@ async def chatroom_ws_receiver(websocket: WebSocket, channel: str, chat, chat_se
             files = data.get("files", [])
 
             await chat_service.update_chat(chat.id, name=text[:30])
-            await chat_service.create_message(chat.id, sender="user", content=text)
+            await chat_service.create_message_with_files(chat.id, sender="user", content=text, files=files)
 
             await broadcast.publish(channel=channel, message=json.dumps({
                 "text": text,

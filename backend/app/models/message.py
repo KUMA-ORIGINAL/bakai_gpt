@@ -11,3 +11,10 @@ class Message(Base, IntIdPkMixin, TimestampMixin):
 
     chat_id: Mapped[int] = mapped_column(ForeignKey("chats.id", ondelete=''))
     chat: Mapped["Chat"] = relationship("Chat", back_populates="messages")
+
+    files: Mapped[list["File"]] = relationship(
+        "File",
+        lazy="selectin",
+        back_populates="message",
+        cascade="all, delete-orphan"
+    )

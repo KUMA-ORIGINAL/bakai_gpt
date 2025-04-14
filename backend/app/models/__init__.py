@@ -4,7 +4,8 @@ __all__ = (
     "User",
     "Assistant",
     "Chat",
-    "Message"
+    "Message",
+    "File"
 )
 
 from .common.db_helper import db_helper
@@ -13,3 +14,4 @@ from .user import User
 from .assistant import Assistant
 from .chat import Chat
 from .message import Message
+from .file import File
