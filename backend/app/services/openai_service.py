@@ -58,7 +58,7 @@ async def get_assistant_response(
             thread_id=thread_id,
             role="user",
             content=content,
-            attachments=attachments or None,
+            attachments=attachments if attachments else None,
         )
 
         async with client.beta.threads.runs.stream(thread_id=thread_id, assistant_id=assistant.openai_id) as stream:
