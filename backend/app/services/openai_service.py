@@ -56,7 +56,7 @@ async def get_assistant_response(
         await client.beta.threads.messages.create(
             thread_id=thread_id,
             role="user",
-            content=user_message,
+            content=content,
             attachments=attachments or None,
         )
 
