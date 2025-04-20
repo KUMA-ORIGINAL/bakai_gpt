@@ -1,4 +1,5 @@
 import logging
+import mimetypes
 from typing import AsyncGenerator, List, Optional
 
 from openai import AsyncOpenAI
@@ -78,9 +79,16 @@ async def get_assistant_response(
         yield "Извините, произошла ошибка."
 
 
-async def upload_file_to_openai(file_data):
+async def upload_file_to_openai(file_data, filename: str = None):
+    mime_type, _ = mimetypes.guess_type(filename or getattr(file_data, 'name', ''))
+
+    if mime_type and mime_type.startswith("image/"):
+        purpose = "vision"
+    else:
+        purpose = "assistants"
+
     file = await client.files.create(
         file=file_data,
-        purpose="assistants"
+        purpose=purpose
     )
     return file
