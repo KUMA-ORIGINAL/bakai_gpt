@@ -21,13 +21,13 @@ class AssistantService:
 
     async def get_all_assistants(
         self,
-        order: str = "id",  # Поле для сортировки
-        limit: int = 100,    # Лимит записей
+        order: str = "id",
+        limit: int = 100,
         offset: int = 0,
     ):
         stmt = (
             select(Assistant)
-            .order_by(text(f"{order} ASC"))  # Сортировка по указанному полю
+            .order_by(text(f"{order} ASC"))
             .limit(limit)
             .offset(offset)
         )

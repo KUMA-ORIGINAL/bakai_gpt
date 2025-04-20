@@ -17,7 +17,6 @@ async def get_all_assistants(
 ):
     assistants = await assistant_service.get_all_assistants()
     for assistant in assistants:
-        assistant.photo = f"{settings.BASE_URL}{assistant.photo}"  # Используем явный BASE_URL
+        assistant.photo = f"{settings.BASE_URL}{assistant.photo}"
 
     return assistants
-

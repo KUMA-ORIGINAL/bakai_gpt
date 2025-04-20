@@ -1,6 +1,6 @@
 import asyncio
 import traceback
-from typing import Dict, Set, List, Tuple
+from typing import Dict, Set
 from operator import itemgetter
 
 from fastapi import WebSocket

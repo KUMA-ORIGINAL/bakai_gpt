@@ -20,8 +20,8 @@ async def get_assistant_response(
     chat: Chat,
     assistant: Assistant,
     chat_service: ChatService,
-    file_ids: list = None,  # [{file_id, filename}]
-    b64_images: list = None  # [{file_id, filename}]
+    files: [dict] = None,
+    images: [dict] = None
 ) -> AsyncGenerator[str, None]:
 
     try:
@@ -32,26 +32,26 @@ async def get_assistant_response(
         else:
             thread_id = chat.thread_id
 
+        content = []
+        if user_message:
+            content.append({"type": "text", "text": user_message})
+
         attachments = []
-        if file_ids:
-            for file_id in file_ids:
+        if files:
+            for file in files:
                 attachments.append({
-                    "file_id": file_id,
+                    "file_id": file["file_id"],
                     "tools": [{"type": "code_interpreter"}]
                 })
+                filename = file.get("filename", "Неизвестный файл")
+                content.append({"type": "text", "text": f"(Файл: {filename})"})
 
-        # content = []
-        #
-        # if user_message:
-        #     content.append({"type": "text", "text": user_message})
-
-        # if b64_images:
-        #     for b64_data in b64_images:
-        #         if b64_data:
-        #             content.append({
-        #                 "type": "image_url",
-        #                 "image_url": {"url": f"data:image/png;base64,{b64_data}"}
-        #             })
+        # if image_ids:
+        #     for image_id in image_ids:
+        #         content.append({
+        #             "type": "image_file",
+        #             "image_file": {"file_id": f"{image_id}"}
+        #         })
 
         await client.beta.threads.messages.create(
             thread_id=thread_id,

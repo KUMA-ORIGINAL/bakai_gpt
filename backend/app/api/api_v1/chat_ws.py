@@ -1,6 +1,4 @@
-import base64
 import json
-from pathlib import Path
 from typing import Annotated
 
 import anyio
@@ -8,7 +6,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, WebSocke
 from starlette import status
 
 from api.dependencies import get_chat_service, verify_user_ws
-from services.openai_service import get_assistant_response, upload_file_to_openai
+from services.openai_service import get_assistant_response
 from managers.connection import ConnectionManager
 from services.chat_service import ChatService
 import logging
@@ -96,14 +94,14 @@ async def chatroom_ws_sender(websocket: WebSocket, channel: str, chat, chat_serv
 
                 logger.info(f"Received event for channel {channel}: {user_text} + files: {uploaded_files}")
 
-                file_ids = []
-                b64_images = []
+                files = []
+                images = []
 
                 for f in uploaded_files:
                     if f['type'] == 'image':
-                        b64_images.append(f['base64_image'])
+                        files.append(f)
                     elif f['type'] == "file":
-                        file_ids.append(f['file_id'])
+                        images.append(f)
                     else:
                         logger.info(f"Skipping unsupported file: {f}")
 
@@ -113,8 +111,8 @@ async def chatroom_ws_sender(websocket: WebSocket, channel: str, chat, chat_serv
                     chat,
                     assistant,
                     chat_service,
-                    file_ids=file_ids,  # только допустимые
-                    b64_images=b64_images   # нововведение
+                    files=files,
+                    images=images
                 ):
                     await websocket.send_text(response_text)
                     full_response += response_text

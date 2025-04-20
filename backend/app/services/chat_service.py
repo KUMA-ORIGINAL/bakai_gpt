@@ -56,7 +56,7 @@ class ChatService:
                 .options(
                     joinedload(Chat.user),
                     joinedload(Chat.assistant),
-                    selectinload(Chat.messages).selectinload(Message.files)  # Подгружаем файлы, если нужно
+                    selectinload(Chat.messages).selectinload(Message.files)
                 )
             )
             result = await self.db_session.execute(stmt)
