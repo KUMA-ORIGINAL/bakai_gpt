@@ -44,7 +44,6 @@ async def get_assistant_response(
                     "tools": [{"type": "code_interpreter"}]
                 })
 
-        if files:
             filenames = ", ".join([file.get("filename", "Неизвестный файл") for file in files])
             content.append({"type": "text", "text": f"(Файлы: {filenames})"})
 
