@@ -32,9 +32,14 @@ async def get_assistant_response(
         else:
             thread_id = chat.thread_id
 
+        filenames_text = ""
+        if files:
+            filenames = ", ".join([file.get("filename", "Неизвестный файл") for file in files])
+            filenames_text = f"\n\n(Файл{'ы' if len(files) > 1 else ''}: {filenames})"
+
         content = []
         if user_message:
-            content.append({"type": "text", "text": user_message})
+            content.append({"type": "text", "text": user_message + filenames_text})
 
         attachments = []
         if files:
@@ -43,9 +48,6 @@ async def get_assistant_response(
                     "file_id": file["file_id"],
                     "tools": [{"type": "code_interpreter"}]
                 })
-
-            filenames = ", ".join([file.get("filename", "Неизвестный файл") for file in files])
-            content.append({"type": "text", "text": f"(Файлы: {filenames})"})
 
         # if image_ids:
         #     for image_id in image_ids:
