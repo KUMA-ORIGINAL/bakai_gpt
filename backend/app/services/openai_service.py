@@ -20,7 +20,7 @@ async def get_assistant_response(
     chat: Chat,
     assistant: Assistant,
     chat_service: ChatService,
-    files: [dict] = None,
+    files,
     images: [dict] = None
 ) -> AsyncGenerator[str, None]:
 
@@ -32,22 +32,20 @@ async def get_assistant_response(
         else:
             thread_id = chat.thread_id
 
+        attachments = []
+        if files:
+            for file in files:
+                attachments.append({
+                    "file_id": file.get("file_id"),
+                    "tools": [{"type": "code_interpreter"}]
+                })
+
         filenames_text = ""
         if files:
             filenames = ", ".join([file.get("filename", "Неизвестный файл") for file in files])
             filenames_text = f"\n\n(Файл{'ы' if len(files) > 1 else ''}: {filenames})"
 
-        content = []
-        if user_message:
-            content.append({"type": "text", "text": user_message + filenames_text})
-
-        attachments = []
-        if files:
-            for file in files:
-                attachments.append({
-                    "file_id": file["file_id"],
-                    "tools": [{"type": "code_interpreter"}]
-                })
+        content = user_message + filenames_text
 
         # if image_ids:
         #     for image_id in image_ids:
