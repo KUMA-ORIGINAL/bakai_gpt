@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 
 from api.dependencies import get_chat_service, get_assistant_service, verify_user
 from config import settings
-from schemas.chat import ChatSchema, ChatListSchema, ChatCreateSchema
+from schemas.chat import ChatSchema, ChatListSchema
 from services import upload_file_to_openai
 from services.assistant_service import AssistantService
 from services.chat_service import ChatService
@@ -70,8 +70,9 @@ async def delete_chat(
 @router.post("/upload/")
 async def upload_file(file: UploadFile = File(...)):
     try:
-        file_data = await file.read()
-        openai_file = await upload_file_to_openai(file_data)
+        file_content  = await file.read()
+        file_for_openai = (file.filename, io.BytesIO(file_content))
+        openai_file = await upload_file_to_openai(file_for_openai)
         file_id = openai_file.id
         return {"file_id": file_id}
     except Exception as e:
