@@ -47,6 +47,9 @@ async def get_assistant_response(
 
         content = user_message + filenames_text
 
+        logger.info(f"content {content}")
+        logger.info(f"attachments {attachments}")
+
         # if image_ids:
         #     for image_id in image_ids:
         #         content.append({
