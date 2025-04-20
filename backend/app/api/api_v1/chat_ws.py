@@ -99,9 +99,9 @@ async def chatroom_ws_sender(websocket: WebSocket, channel: str, chat, chat_serv
 
                 for f in uploaded_files:
                     if f['type'] == 'image':
-                        files.append(f)
-                    elif f['type'] == "file":
                         images.append(f)
+                    elif f['type'] == "file":
+                        files.append(f)
                     else:
                         logger.info(f"Skipping unsupported file: {f}")
 
