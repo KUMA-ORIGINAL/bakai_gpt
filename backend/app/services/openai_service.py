@@ -43,8 +43,10 @@ async def get_assistant_response(
                     "file_id": file["file_id"],
                     "tools": [{"type": "code_interpreter"}]
                 })
-                filename = file.get("filename", "Неизвестный файл")
-                content.append({"type": "text", "text": f"(Файл: {filename})"})
+
+        if files:
+            filenames = ", ".join([file.get("filename", "Неизвестный файл") for file in files])
+            content.append({"type": "text", "text": f"(Файлы: {filenames})"})
 
         # if image_ids:
         #     for image_id in image_ids:
