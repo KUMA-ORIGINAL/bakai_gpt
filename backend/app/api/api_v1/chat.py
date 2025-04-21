@@ -20,10 +20,10 @@ async def get_chats(
 ):
     chats = await chat_service.get_all_chats(user_id)
     for chat in chats:
-        chat.assistant.photo = f"{settings.BASE_URL}{chat.assistant.photo}"
+        if not chat.assistant.photo.startswith("http"):
+            chat.assistant.photo = f"{settings.BASE_URL}{chat.assistant.photo}"
 
     return chats
-
 
 @router.post("/", response_model=ChatSchema)
 async def create_chat(
