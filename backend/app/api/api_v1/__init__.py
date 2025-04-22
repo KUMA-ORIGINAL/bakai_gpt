@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi.responses import Response
 
 from config import settings
 
@@ -26,3 +27,7 @@ router.include_router(
     chat_router,
     prefix=settings.api.v1.chats
 )
+
+@router.head("/health", tags=["system"])
+async def health_check():
+    return Response(status_code=200)
