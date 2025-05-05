@@ -1,3 +1,4 @@
+import json
 import logging
 import mimetypes
 from typing import AsyncGenerator, List, Optional
@@ -72,11 +73,43 @@ async def get_assistant_response(
                     delta = event.data.delta
                     if delta and delta.content:
                         yield delta.content[0].text.value
+                elif event.event == 'thread.run.requires_action':
+                    run_id = event.data.id
+                    tool_outputs = []
+
+                    for tool in event.data.required_action.submit_tool_outputs.tool_calls:
+                        if tool.function.name == "generate_image":
+                            args = json.loads(tool.function.arguments)
+                            image_url = await generate_image(args["prompt"])
+                            tool_outputs.append({
+                                "tool_call_id": tool.id,
+                                "output": image_url
+                            })
+                    async with client.beta.threads.runs.submit_tool_outputs_stream(
+                            thread_id=thread_id,
+                            run_id=run_id,
+                            tool_outputs=tool_outputs,
+                    ) as tool_stream:
+                        async for text in tool_stream.text_deltas:
+                            yield text
                 elif event.event == "done":
                     break
+
     except Exception as e:
         logger.exception("❌ Ошибка при запросе к OpenAI API")
         yield "Извините, произошла ошибка."
+
+
+async def generate_image(prompt: str) -> str:
+    logger.info(f"🖼 Генерация изображения по описанию: {prompt}")
+    response = await client.images.generate(
+        model="dall-e-3",
+        prompt=prompt,
+        size="1024x1024",
+        quality="standard",
+        n=1,
+    )
+    return response.data[0].url
 
 
 async def upload_file_to_openai(file_data, filename: str = None):
